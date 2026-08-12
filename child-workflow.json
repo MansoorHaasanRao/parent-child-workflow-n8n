@@ -1,0 +1,175 @@
+{
+  "name": "child workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -336,
+        -16
+      ],
+      "id": "14a031be-aaaa-4684-960c-d37b9b5a6364",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7e961681-5abc-4bd9-8eb6-e8743be5c01f",
+              "name": "query",
+              "value": "={{ $json.query }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -128,
+        -16
+      ],
+      "id": "9e9e67b6-f7d1-4219-8f07-c169da7871ea",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "cityName": "={{ $json.query }}"
+      },
+      "type": "n8n-nodes-base.openWeatherMap",
+      "typeVersion": 1,
+      "position": [
+        80,
+        -16
+      ],
+      "id": "3b9ae1e8-0173-4c18-a3e1-6c6019491932",
+      "name": "OpenWeatherMap",
+      "credentials": {
+        "openWeatherMapApi": {
+          "id": "cFworEYZkGU6xBT3",
+          "name": "OpenWeatherMap account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=i am giving you weather api result wich may have information about weather of the city that you will give me plain text information \n#temp: {{ $json.main.temp }}\n#main:{{ $json.weather[0].main }}\n#description:{{ $json.weather[0].description }}\n#feels:{{ $json.main.feels_like }}\n#country:{{ $json.sys.country }}\n#humidity:{{ $json.main.humidity }}\n#city name:{{ $json.name }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        288,
+        -16
+      ],
+      "id": "3ca53e7e-dcfc-41dc-8376-adf48d721798",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "bnxjyaYl7ibRPCmq",
+          "name": "OpenAI account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1e1b122b-d4c4-4b25-a6e2-f813498ff08a",
+              "name": "output[0].content[0].text",
+              "value": "={{ $json.output[0].content[0].text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        640,
+        -16
+      ],
+      "id": "0adf0f71-6ee3-4588-b1e0-00a559a054bb",
+      "name": "Edit Fields1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "OpenWeatherMap",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenWeatherMap": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "ceb9f4a0-ab61-4a8d-a555-f918f377843d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7fa5598a3334c3a49d4db24b02de939bdfd13f976f9fc8c7e8c877349896716c"
+  },
+  "id": "Sr7IOJyNfWArgmYY",
+  "tags": []
+}
